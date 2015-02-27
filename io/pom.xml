@@ -22,8 +22,8 @@
     <groupId>com.cobinrox</groupId>
     <artifactId>common</artifactId>
     <version>1</version>
-</dependency>
-    <dependency>
+  </dependency>
+  <dependency>
             <groupId>com.pi4j</groupId>
             <artifactId>pi4j-core</artifactId>
             <version>${pi4j.version}</version>
