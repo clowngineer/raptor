@@ -3,6 +3,7 @@ package com.cobinrox.common;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -28,7 +29,13 @@ public class Utils {
 			is = caller.getClass().getClassLoader().getResourceAsStream(fname);//new FileInputStream(fname);
 			if( is != null)
 			{
-				logger.info("Reading from file [" + fname + "]");
+				URL possiblefile = null;
+				try
+				{
+					possiblefile = caller.getClass().getClassLoader().getResource(fname);
+				} catch(Throwable t){} // ok, may be stream within a jar file
+				logger.info("Reading from resource [" + fname + "]" +
+								(possiblefile==null?"":" ["+possiblefile.getPath()+"]"));
 				p.load(is);
 			}
 			
