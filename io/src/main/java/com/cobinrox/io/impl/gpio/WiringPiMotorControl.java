@@ -48,6 +48,8 @@ protected void lowLevelMove(final String foreAft, final String leftRight) throws
 	logger.info("          low level move [" + foreAft + "] [" + leftRight + "]" +
             (mp.SIMULATE_PI?"SIMULATED":"") + "...");
 	Process p = null;
+	fwdCmd = null;
+	lrCmd = null;
 	if (foreAft != null && (foreAft.equals(mp.FORWARD) || foreAft.equals(mp.BACKWARD))) {
 		fwdCmd = "gpio write "
 				+ (foreAft.equals(mp.FORWARD) ? 
