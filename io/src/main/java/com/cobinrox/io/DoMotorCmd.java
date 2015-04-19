@@ -1,32 +1,30 @@
 package com.cobinrox.io;
-import java.util.Properties;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
 import com.cobinrox.common.Utils;
 import com.cobinrox.io.impl.IMotorControl;
+//import com.cobinrox.io.impl.IMotorControl;
 import com.cobinrox.io.impl.MotorProps;
-import com.cobinrox.io.impl.gpio.Pi4jMotorControl;
-import com.cobinrox.io.impl.gpio.WiringPiMotorControl;
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPinDigitalInput;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.PinState;
-import com.pi4j.io.gpio.RaspiPin;
+import com.cobinrox.io.impl.RemoteCarMotorControl;
+import com.cobinrox.io.impl.SimpleSingleMotorControl;
+import com.cobinrox.io.impl.WheelChairMotorControl;
+/* test */
 
 public class DoMotorCmd {
 	static final Logger logger = Logger.getLogger(DoMotorCmd.class);
+	static final String VERSION = "410";
+	
 	MotorProps mp = new MotorProps();
 	IMotorControl motor;
 	public static void main(String args[]) {
+		System.out.println("* * * * * * * VERSION " + VERSION + " * * * * * * * *");
 		DoMotorCmd dmc = new DoMotorCmd( );
 		
 		String input = "";
 		Scanner scanIn = new Scanner(System.in);
-		while(!input.equals("x"))
+		while(!input.equalsIgnoreCase("x"))
 		{
 		   System.out.println("Enter F/L/R/B/FL/FR/BL/BR/X --> ");
 	       input = scanIn.nextLine();
@@ -70,10 +68,12 @@ public class DoMotorCmd {
                    logger.info("                          *");
                    logger.info("***************************");
                 }
-        if( mp.GPIO_LIB.equals(MotorProps.GPIO_PI4J_LIB_PROP_VAL))
-        	motor = new Pi4jMotorControl();
+        if( mp.MOTOR_CONFIG.equals(MotorProps.MOTOR_CONFIG_PROP_VAL_REMOTE_CAR))
+        	motor = new RemoteCarMotorControl() ;
+        else if( mp.MOTOR_CONFIG.equals(MotorProps.MOTOR_CONFIG_PROP_VAL_SINGLE))
+        	motor = new SimpleSingleMotorControl();
         else
-        	motor = new WiringPiMotorControl();
+        	motor = new WheelChairMotorControl();
         try
         {
         	motor.initHardware();

@@ -43,7 +43,7 @@ public class WiringPiMotorControl extends AbstractMotorControl{
 		}
 	}
 
-protected void lowLevelMove(final String foreAft, final String leftRight) throws Throwable
+public void lowLevelMove(final String foreAft, final String leftRight) throws Throwable
 {
 	logger.info("          low level move [" + foreAft + "] [" + leftRight + "]" +
             (mp.SIMULATE_PI?"SIMULATED":"") + "...");
@@ -70,7 +70,7 @@ protected void lowLevelMove(final String foreAft, final String leftRight) throws
 	logger.info("          ...end low level move");
 }
 
-protected void lowLevelStop(final String foreAft, final String leftRight) throws Throwable
+public void lowLevelStop(final String foreAft, final String leftRight) throws Throwable
 {
 	logger.info("          low level stopping [" + foreAft + "] [" + leftRight + "]" +
             (mp.SIMULATE_PI?"SIMULATED":"") + "...");
@@ -95,7 +95,7 @@ protected void lowLevelStop(final String foreAft, final String leftRight) throws
 	logger.info("          ...end low level stop");
 }
 
-protected void brakeAll() {
+public void brakeAll() {
 		Process p = null;
 		try {
 			long start = new java.util.Date().getTime();

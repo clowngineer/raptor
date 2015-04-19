@@ -1,22 +1,37 @@
-package com.cobinrox.io.impl.gpio;
+package com.cobinrox.io.impl;
 
 import org.apache.log4j.Logger;
 
 import com.cobinrox.io.impl.IMotorControl;
 import com.cobinrox.io.impl.MotorProps;
+import com.cobinrox.io.impl.gpio.AbstractMotorControl;
+import com.cobinrox.io.impl.gpio.Pi4jMotorControl;
+import com.cobinrox.io.impl.gpio.WiringPiMotorControl;
 
-public abstract class AbstractMotorControl implements IMotorControl {
-	static final Logger logger = Logger.getLogger(AbstractMotorControl.class);
+public class RemoteCarMotorControl implements IMotorControl {
+	static final Logger logger = Logger.getLogger(RemoteCarMotorControl.class);
 
 	MotorProps mp;
-	
-	
-	public abstract void lowLevelMove(final String foreAft, final String leftRight)
-		throws Throwable;
-	public abstract void lowLevelStop(final String foreAft, final String leftRight)
-		throws Throwable;
-	public abstract void brakeAll() throws Throwable;
-	public abstract void initHardware() throws Throwable;
+	AbstractMotorControl myMotors;
+	public void initHardware() throws Throwable{
+		if(myMotors == null )
+		{
+			mp=new MotorProps();
+			mp.setProps(false);
+			if( mp.GPIO_LIB.equals(MotorProps.GPIO_PI4J_LIB_PROP_VAL))
+				myMotors = new Pi4jMotorControl();
+	        else
+	        	myMotors = new WiringPiMotorControl();
+			myMotors.initHardware();
+		}
+	}
+	/*
+	public void lowLevelMove(final String foreAft, final String leftRight)
+			throws Throwable{myMotors.lowLevelMove(foreAft,leftRight);}
+		public void lowLevelStop(final String foreAft,String leftRight)
+			throws Throwable{myMotors.lowLevelStop(foreAft, leftRight);}
+		public void brakeAll() throws Throwable{myMotors.brakeAll();}
+	*/
 	String lrState;
 	String fbState;
 	public void move(final String foreAft, final String leftRight) {
@@ -67,7 +82,7 @@ public abstract class AbstractMotorControl implements IMotorControl {
 				logger.info("......................fbState/" + fbState);
 				Thread.sleep(200);
 			}
-			brakeAll();
+			myMotors.brakeAll();
 			logger.info("...end move!");
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -88,13 +103,13 @@ public abstract class AbstractMotorControl implements IMotorControl {
 				for (int i = 0; i < numPeriods; i++) {
 					long time = System.currentTimeMillis();
 					logger.info("     turning on for [" + numMsHi + "]ms...");
-					lowLevelMove(foreAft,leftRight);
+					myMotors.lowLevelMove(foreAft,leftRight);
 					Thread.sleep(numMsHi);
 
 					if (numMsLo > 0) {
 						time = System.currentTimeMillis();
 						logger.info("     turning off for [" + numMsLo + "]ms...");
-						lowLevelStop(foreAft,leftRight);
+						myMotors.lowLevelStop(foreAft,leftRight);
 						Thread.sleep(numMsLo);
 					}
 				}
@@ -111,6 +126,6 @@ public abstract class AbstractMotorControl implements IMotorControl {
 
 	public void shutdown() throws Throwable
 	{
-		brakeAll();
+		myMotors.brakeAll();
 	}
 }

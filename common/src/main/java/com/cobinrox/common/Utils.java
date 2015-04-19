@@ -1,5 +1,5 @@
-package com.cobinrox.common;
-
+package com.cobinrox.common; 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 
 public class Utils {
+/* test */
 	static final Logger logger = Logger.getLogger(Utils.class);
 
 	/**
@@ -26,7 +27,14 @@ public class Utils {
 		InputStream is = null;
 		try
 		{
+			logger.debug("classpah: [" + System.getProperty("java.class.path") + "]");
+			logger.debug("fname: " + fname);
+			logger.debug("caller: " + caller);;
+			logger.debug("caller.getClass(): " + caller.getClass());
 			is = caller.getClass().getClassLoader().getResourceAsStream(fname);//new FileInputStream(fname);
+			
+			logger.debug("caller.getClass().getClassLoader().getResourceAsStream(fname):" + is);
+
 			if( is != null)
 			{
 				URL possiblefile = null;
@@ -38,7 +46,10 @@ public class Utils {
 								(possiblefile==null?"":" ["+possiblefile.getPath()+"]"));
 				p.load(is);
 			}
-			
+			else
+			{
+				throw new IOException("Cannot read input stream for " + fname);
+			}
 			return p;
 		}
 		catch(Throwable t)

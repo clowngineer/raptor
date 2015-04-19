@@ -101,7 +101,7 @@ public class Pi4jMotorControl extends AbstractMotorControl{
         }
 	}
 	
-	protected void lowLevelMove(final String foreAft, final String leftRight) throws Throwable
+	public  void lowLevelMove(final String foreAft, final String leftRight) throws Throwable
     {
 		logger.info("low level move [" + foreAft + "] [" + leftRight + "]" +
                      (mp.SIMULATE_PI?"SIMULATED":""));
@@ -113,12 +113,12 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 		}
     }
 
-	protected void lowLevelStop(final String foreAft, final String leftRight) throws Throwable
+	public  void lowLevelStop(final String foreAft, final String leftRight) throws Throwable
 	{
 		logger.info("low level stop [" + foreAft + "] [" + leftRight + "]" +
                 (mp.SIMULATE_PI?"SIMULATED":""));
 	}
-	protected void brakeAll() {
+	public  void brakeAll() {
 		if (!mp.SIMULATE_PI) {
 			
 		} else {

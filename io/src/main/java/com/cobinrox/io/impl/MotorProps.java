@@ -26,9 +26,16 @@ public class MotorProps {
 	public static int    GPIO_OFF          ;public static final String GPIO_OFF_STR_PROP     = "GPIO_OFF_STR";
 	public static String GPIO_LIB          ;public static final String GPIO_LIB_PROP         = "GPIO_LIBRARY";
 	public static int    NUM_MOTORS        ;public static final String NUM_MOTORS_PROP = "NUM_MOTORS";
+	public static String MOTOR_CONFIG      ;public static final String MOTOR_CONFIG_PROP = "MOTOR_CONFIG";
+	 
 	
 	public static final String GPIO_PI4J_LIB_PROP_VAL      = "pi4j";
 	public static final String GPIO_WIRING_PI_LIB_PROP_VAL = "wiring_pi";
+	
+	public static final String MOTOR_CONFIG_PROP_VAL_SINGLE ="simple_single";
+	public static final String MOTOR_CONFIG_PROP_VAL_REMOTE_CAR ="remote_car";
+	public static final String MOTOR_CONFIG_PROP_VAL_WHEEL_CHAIR ="wheel_chair";
+	
 	
 	public int DUTY_CYCLE_HI_MS             ;public static final String DUTY_CYCLE_HI_MS_PROP = "DUTY_CYCLE_HI_MS";
 	public int DUTY_CYCLE_LO_MS             ;public static final String DUTY_CYCLE_LO_MS_PROP = "DUTY_CYCLE_LO_MS";
@@ -49,7 +56,8 @@ public class MotorProps {
 		NUM_MOTORS   = Integer.parseInt(properties.getProperty(NUM_MOTORS_PROP).trim());
 		if(verbose)logger.info("Num motors: [" + NUM_MOTORS + "]");
 
-		
+		MOTOR_CONFIG = properties.getProperty(MOTOR_CONFIG_PROP).trim();
+		if(verbose)logger.info("Motor config: [" + MOTOR_CONFIG + "]");
 		
 		FWD_GPIO_PIN_NUM       = Integer.parseInt(properties.getProperty(FWD_GPIO_PIN_PROP).trim());
 		BACK_GPIO_PIN_NUM      = Integer.parseInt(properties.getProperty(BACK_GPIO_PIN_PROP).trim());
