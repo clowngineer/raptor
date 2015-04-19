@@ -1,0 +1,4 @@
+1) in dos command, run mvn eclipse:eclipse
+2) start eclipse, but choose new workspace
+of one directory PARALLEL to raptor
+3) in eclipse, import existing maven project of raptor
