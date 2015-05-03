@@ -18,11 +18,12 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 	GpioPinDigitalOutput pi4jLeftPin;
 	GpioPinDigitalOutput pi4jRightPin;
 	GpioController pi4jController;
-	MotorProps mp = new MotorProps();
+	MotorProps mp;//= new MotorProps();
 	
-	public void initHardware() throws Throwable
+	public void initHardware(MotorProps mp) throws Throwable
 	{
-		mp.setProps(false);
+		//mp.setProps(false);
+		this.mp = mp;
 		logger.info("Initializing pins to OUTPUT MODE");
 
 		if( !mp.SIMULATE_PI)

@@ -13,17 +13,17 @@ public class SimpleSingleMotorControl implements IMotorControl {
 
 	MotorProps mp;
 	AbstractMotorControl myMotor;
-	public void initHardware() throws Throwable{
+	public void initHardware(MotorProps mp) throws Throwable{
 		if(myMotor == null )
 		{
-			mp=new MotorProps();
-			mp.setProps(false);
+			this.mp=mp;//new MotorProps();
+			//mp.setProps(false);
 			if( mp.GPIO_LIB.equals(MotorProps.GPIO_PI4J_LIB_PROP_VAL))
 				myMotor = new Pi4jMotorControl();
 	        else
 	        	myMotor = new WiringPiMotorControl();
-			myMotor = new WiringPiMotorControl();
-			myMotor.initHardware();
+			//myMotor = new WiringPiMotorControl();
+			myMotor.initHardware(mp);
 		}
 	}
 

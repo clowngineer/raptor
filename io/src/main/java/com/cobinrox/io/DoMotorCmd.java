@@ -14,7 +14,7 @@ import com.cobinrox.io.impl.WheelChairMotorControl;
 
 public class DoMotorCmd {
 	static final Logger logger = Logger.getLogger(DoMotorCmd.class);
-	static final String VERSION = "410";
+	static final String VERSION = "412";
 	
 	MotorProps mp = new MotorProps();
 	IMotorControl motor;
@@ -26,7 +26,7 @@ public class DoMotorCmd {
 		Scanner scanIn = new Scanner(System.in);
 		while(!input.equalsIgnoreCase("x"))
 		{
-		   System.out.println("Enter F/L/R/B/FL/FR/BL/BR/X --> ");
+		   System.out.println("Enter F/L/R/B/FL/FR/BL/BR/D/X --> ");
 	       input = scanIn.nextLine();
 	       System.out.println("You entered [" + input + "]");
 	       dmc.doThis(input);
@@ -55,6 +55,9 @@ public class DoMotorCmd {
 	    	    moveOneDutyCycle(MotorProps.BACKWARD, MotorProps.LEFT);
 	       else if(fblr.equalsIgnoreCase("BR"))
 	    	    moveOneDutyCycle(MotorProps.BACKWARD, MotorProps.RIGHT);
+	       
+	       else if(fblr.toUpperCase().startsWith("D"))
+	    	    System.out.println(changeData(fblr.toUpperCase()));
 	}
 	public DoMotorCmd( )
 	{
@@ -76,7 +79,7 @@ public class DoMotorCmd {
         	motor = new WheelChairMotorControl();
         try
         {
-        	motor.initHardware();
+        	motor.initHardware(mp);
         }
         catch(Throwable t)
         {
@@ -85,6 +88,69 @@ public class DoMotorCmd {
         }
 	}
 	
+	public String changeData(String dataStr)
+	{
+		String ret = "done";
+		System.out.println("data change request [" + dataStr + "]");
+		
+		String[] parsed = dataStr.split("_");
+		if( parsed.length < 3 )
+		{
+			ret = "Invalid data change request [" + dataStr + "] Expecting one of\n";
+			ret+= dchelp();
+			
+			return ret;
+		}
+		String key = parsed[1];
+		String newVal = parsed[2];
+		
+		//sb.append("D_RT_<float> (set cmd run time ms)");
+		//sb.append("D_HI_<float> (set duty hi time ms)");
+		//sb.append("D_LO_<float> (set duty lo time ms)");
+		try
+		{
+			if( key.equals("RT"))
+			{
+				mp.CMD_RUN_TIME_MS = Integer.parseInt(newVal);
+				ret = "Updated " + mp.CMD_RUN_TIME_MS_PROP + " [" + newVal + "]";
+			}
+			else if(key.equals("HI"))
+			{
+				mp.DUTY_CYCLE_HI_MS = Integer.parseInt(newVal);
+				ret = "Updated " + mp.DUTY_CYCLE_HI_MS_PROP + " [" + newVal + "]";
+
+			}
+			else if(key.equals("LO"))
+			{
+				mp.DUTY_CYCLE_LO_MS = Integer.parseInt(newVal);
+				ret = "Updated " + mp.DUTY_CYCLE_LO_MS_PROP + " [" + newVal + "]";
+
+			}
+		}
+		catch(Throwable t)
+		{
+			ret = "Invalid data change request [" + dataStr + "] Expecting one of\n";
+			ret+= dchelp();
+			
+			return ret;
+		}
+		return ret;
+	}
+	public static String dchelp()
+	{
+		StringBuffer sb = new StringBuffer(
+				  "D_SWAP_FB (swap front/back motors)\n");
+		sb.append("D_SWAP_LR (swap left/right motors)\n");
+		sb.append("D_F_<integer> (set FRONT GPIO )\n");
+		sb.append("D_B_<integer> (set BACK GPIO )\n");
+		sb.append("D_L_<integer> (set LEFT GPIO )\n");
+		sb.append("D_R_<integer> (set RIGHT GPIO )\n");
+		sb.append("D_RT_<float> (set cmd run time ms)\n");
+		sb.append("D_HI_<float> (set duty hi time ms)\n");
+		sb.append("D_LO_<float> (set duty lo time ms)\n");
+		sb.append("D_SIM_<integer> (set simulate mode)");
+		return sb.toString();
+	}
 	public String moveOneDutyCycle(String fwdAft, String leftRight)
 	{
 		String err = null;

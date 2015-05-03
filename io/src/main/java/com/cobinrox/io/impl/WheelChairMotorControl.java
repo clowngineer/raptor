@@ -13,16 +13,16 @@ public class WheelChairMotorControl implements IMotorControl {
 
 	MotorProps mp;
 	AbstractMotorControl myMotors;
-	public void initHardware() throws Throwable{
+	public void initHardware(MotorProps mp) throws Throwable{
 		if(myMotors == null )
 		{
-			mp=new MotorProps();
-			mp.setProps(false);
+			this.mp=mp;//new MotorProps();
+			//mp.setProps(false);
 			if( mp.GPIO_LIB.equals(MotorProps.GPIO_PI4J_LIB_PROP_VAL))
 				myMotors = new Pi4jMotorControl();
 	        else
 	        	myMotors = new WiringPiMotorControl();			
-			myMotors.initHardware();
+			myMotors.initHardware(mp);
 		}
 	}
 	
@@ -35,32 +35,84 @@ public class WheelChairMotorControl implements IMotorControl {
 	
 	String lrState;
 	String fbState;
-	public void move(final String foreAft, final String leftRight) {
+	public void move( String foreAft,  String leftRight) {
+		// first check what the CALLER sent in . . .
+		/*if( foreAft != null && foreAft.length() > 2 )
+		{
+			logger.info("Not sure how to handle foreAft of [" + foreAft + "]");
+		    return;
+		}
+		if( leftRight != null && leftRight.length() > 2)
+		{
+			logger.info("Not sure how to handle leftRight of [" + leftRight + "]");
+			return;
+		}*/
+		if( foreAft != null && leftRight != null )
+		{
+			logger.info("Not sure how to handle both foreAft & leftRight");
+			return;
+		}
+		
+		// now re-code to remote car motor command
+		if( foreAft != null )
+		{
+			if( foreAft.equals(MotorProps.FORWARD))
+			{
+				// we want both motors to move +
+				leftRight = MotorProps.LEFT;
+			}
+			else
+			{
+				// we want both motors to move -
+				leftRight = MotorProps.RIGHT;
+			}
+		}
+		else
+		{
+			if( leftRight.equals(MotorProps.LEFT))
+			{
+				// nada
+			}
+			else
+			{
+				leftRight = null;
+				foreAft = MotorProps.FORWARD;
+			}
+		}
+		
+		    		
 		logger.info("About to move [" + foreAft + "/" + leftRight
 				+ "]...");
-		if( mp==null) 
+		if( mp == null )
+		{
+			logger.error("INVALID STATE MP NOT SET");
+			return;
+		}
+		/*if( mp==null) 
 		{
 			mp=new MotorProps();
 			mp.setProps(false);
-		}
+		}*/
 		lrState = "processing";
 		fbState = "processing";
 		try {
 			Thread fbThread = null;
 			Thread lrThread = null;
 			if (foreAft != null) {
+				final String foreAftT = foreAft;
 				fbThread = new Thread() {
 					public void run() {
-						pulse(foreAft, null,mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
+						pulse(foreAftT, null,mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
 						fbState=null;
 					}
 				};
 				fbThread.setName("FWD_THREAD");
 			}
 			if (leftRight != null) {
+				final String leftRightT = leftRight;
 				lrThread = new Thread() {
 					public void run() {
-						pulse(null,leftRight, mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
+						pulse(null,leftRightT, mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
 						lrState = null;
 					}
 				};

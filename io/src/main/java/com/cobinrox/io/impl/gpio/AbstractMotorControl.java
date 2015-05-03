@@ -16,7 +16,7 @@ public abstract class AbstractMotorControl implements IMotorControl {
 	public abstract void lowLevelStop(final String foreAft, final String leftRight)
 		throws Throwable;
 	public abstract void brakeAll() throws Throwable;
-	public abstract void initHardware() throws Throwable;
+	public abstract void initHardware(MotorProps mp) throws Throwable;
 	String lrState;
 	String fbState;
 	public void move(final String foreAft, final String leftRight) {

@@ -13,16 +13,16 @@ public class RemoteCarMotorControl implements IMotorControl {
 
 	MotorProps mp;
 	AbstractMotorControl myMotors;
-	public void initHardware() throws Throwable{
+	public void initHardware(MotorProps mp) throws Throwable{
 		if(myMotors == null )
 		{
-			mp=new MotorProps();
-			mp.setProps(false);
+			this.mp=mp;//new MotorProps();
+			//mp.setProps(false);
 			if( mp.GPIO_LIB.equals(MotorProps.GPIO_PI4J_LIB_PROP_VAL))
 				myMotors = new Pi4jMotorControl();
 	        else
 	        	myMotors = new WiringPiMotorControl();
-			myMotors.initHardware();
+			myMotors.initHardware(mp);
 		}
 	}
 	/*

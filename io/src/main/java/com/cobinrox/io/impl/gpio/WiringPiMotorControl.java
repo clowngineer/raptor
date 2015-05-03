@@ -6,16 +6,17 @@ import com.cobinrox.io.impl.MotorProps;
 
 public class WiringPiMotorControl extends AbstractMotorControl{
 	static final Logger logger = Logger.getLogger(WiringPiMotorControl.class);
-	MotorProps mp = new MotorProps();
+	MotorProps mp; // = new MotorProps();
 	static Runtime rt = Runtime.getRuntime();
 
 	String fwdCmd;
 	String lrCmd;
 	
 	public WiringPiMotorControl(){super();}
-	public void initHardware() throws Throwable
+	public void initHardware(MotorProps mp) throws Throwable
 	{	
-		mp.setProps(false);
+		//mp.setProps(false);
+		this.mp= mp;
 		logger.info("Initializing pins to OUTPUT MODE");
 		try
 		{

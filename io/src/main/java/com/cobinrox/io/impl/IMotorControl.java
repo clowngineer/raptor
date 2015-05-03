@@ -1,8 +1,9 @@
 package com.cobinrox.io.impl;
+import com.cobinrox.io.impl.MotorProps;
 
 public interface IMotorControl {
 	
-	public void initHardware() throws Throwable;
+	public void initHardware(MotorProps mp) throws Throwable;
 	
 	
 	/**
