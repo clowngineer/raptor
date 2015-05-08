@@ -106,22 +106,52 @@ public class Pi4jMotorControl extends AbstractMotorControl{
     {
 		logger.info("low level move [" + foreAft + "] [" + leftRight + "]" +
                      (mp.SIMULATE_PI?"SIMULATED":""));
-		if (foreAft.equals(mp.FORWARD) || foreAft.equals(mp.BACKWARD)) {
-			
+		String m1Info = null;
+		String m2Info = null;
+		if (foreAft != null)
+		{
+			m1Info = " (m1 " + (foreAft.equals(mp.FORWARD) ? "+" : "-") + ")";
+			logger.info(m1Info);
+			if( !mp.SIMULATE_PI) {
+				if (foreAft.equals(mp.FORWARD)) {
+					pi4jForwardPin.high();
+				} else {
+					pi4jBackPin.high();
+				}
+			}
+
 		}
-		if (leftRight != null && (leftRight.equals(mp.LEFT) || leftRight.equals(mp.RIGHT))) {
-			//
+		if (leftRight != null)
+		{
+			m2Info = " (m2 " + (leftRight.equals(mp.LEFT) ? "+" : "-") + ")";
+			logger.info(m2Info);
+			if( !mp.SIMULATE_PI ) {
+				if (leftRight.equals(mp.LEFT)) {
+					pi4jLeftPin.high();
+				} else {
+					pi4jRightPin.high();
+				}
+			}
 		}
     }
 
 	public  void lowLevelStop(final String foreAft, final String leftRight) throws Throwable
 	{
 		logger.info("low level stop [" + foreAft + "] [" + leftRight + "]" +
-                (mp.SIMULATE_PI?"SIMULATED":""));
+				(mp.SIMULATE_PI ? "SIMULATED" : ""));
+		if( !mp.SIMULATE_PI) {
+			pi4jBackPin.low();
+			pi4jForwardPin.low();
+			pi4jLeftPin.low();
+			pi4jRightPin.low();
+		}
 	}
 	public  void brakeAll() {
 		if (!mp.SIMULATE_PI) {
-			
+			pi4jBackPin.low();
+			pi4jForwardPin.low();
+			pi4jLeftPin.low();
+			pi4jRightPin.low();
 		} else {
 			logger.info("Simulating shut down all pins");
 		}
