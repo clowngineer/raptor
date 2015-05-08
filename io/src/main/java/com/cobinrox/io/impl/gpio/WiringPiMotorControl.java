@@ -51,12 +51,16 @@ public void lowLevelMove(final String foreAft, final String leftRight) throws Th
 	Process p = null;
 	fwdCmd = null;
 	lrCmd = null;
+	String m1Info=null;
+	String m2Info=null;
 	if (foreAft != null && (foreAft.equals(mp.FORWARD) || foreAft.equals(mp.BACKWARD))) {
 		fwdCmd = "gpio write "
 				+ (foreAft.equals(mp.FORWARD) ? 
 						mp.FWD_GPIO_PIN_NUM
 						: 
 						mp.BACK_GPIO_PIN_NUM);
+		m1Info = fwdCmd + " (m1 " + (foreAft.equals(mp.FORWARD)?"+":"-") + ")";
+
 	}
 	if (leftRight != null && (leftRight.equals(mp.LEFT) || leftRight.equals(mp.RIGHT))) {
 		lrCmd = "gpio write "
@@ -64,28 +68,30 @@ public void lowLevelMove(final String foreAft, final String leftRight) throws Th
 						mp.LEFT_GPIO_PIN_NUM
 						: 
 						mp.RIGHT_GPIO_PIN_NUM);
+		m2Info = lrCmd + " (m2 " + (leftRight.equals(mp.LEFT)?"+":"-") + ")";
 	}
 	String pulseOnCmd = (fwdCmd!=null?fwdCmd:lrCmd) + " " + mp.GPIO_ON;
 	logger.info("          "+pulseOnCmd + (mp.SIMULATE_PI?" SIMULATED":""));
+	logger.info("          "+(m1Info==null?m2Info:m1Info) + (mp.SIMULATE_PI?" SIMULATED":""));
 	if(!mp.SIMULATE_PI){p = rt.exec(pulseOnCmd);	p.waitFor();}
-	logger.info("          ...end low level move");
+	//kind of annoying logger.info("          ...end low level move");
 }
 
-public void lowLevelStop(final String foreAft, final String leftRight) throws Throwable
+public void lowLevelStop(final String m1foreAft, final String m2leftRight) throws Throwable
 {
-	logger.info("          low level stopping [" + foreAft + "] [" + leftRight + "]" +
+	logger.info("          low level stopping [" + m1foreAft + "] [" + m2leftRight + "]" +
             (mp.SIMULATE_PI?"SIMULATED":"") + "...");
 	Process p = null;
-	if (foreAft.equals(mp.FORWARD) || foreAft.equals(mp.BACKWARD)) {
+	if (m1foreAft.equals(mp.FORWARD) || m1foreAft.equals(mp.BACKWARD)) {
 		fwdCmd = "gpio write "
-				+ (foreAft.equals(mp.FORWARD) ? 
+				+ (m1foreAft.equals(mp.FORWARD) ?
 						mp.FWD_GPIO_PIN_NUM
 						: 
 						mp.BACK_GPIO_PIN_NUM);
 	}
-	if (leftRight.equals(mp.LEFT) || leftRight.equals(mp.RIGHT)) {
+	if (m2leftRight.equals(mp.LEFT) || m2leftRight.equals(mp.RIGHT)) {
 		lrCmd = "gpio write "
-				+ (leftRight.equals(mp.LEFT) ? 
+				+ (m2leftRight.equals(mp.LEFT) ?
 						mp.LEFT_GPIO_PIN_NUM
 						: 
 						mp.RIGHT_GPIO_PIN_NUM);
