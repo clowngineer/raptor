@@ -71,12 +71,16 @@ public class WheelChairMotorControl implements IMotorControl {
 		{
 			if( leftRight.equals(MotorProps.LEFT))
 			{
-				// nada
+				foreAft = MotorProps.BACKWARD;
+				//foreAft   = minus;
+				//leftRight = plus;
 			}
-			else
+			else if( leftRight.equals(MotorProps.RIGHT))
 			{
-				leftRight = null;
+				leftRight = MotorProps.LEFT;
 				foreAft = MotorProps.FORWARD;
+				//foreAft = minus;
+				//leftRight = minus;
 			}
 		}
 		
