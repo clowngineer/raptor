@@ -141,12 +141,12 @@ public class WheelChairMotorControl implements IMotorControl {
 			// 
 			while (m2lrThread != null && m2lrState != null)
 			{
-				logger.info("......................m2lrState/" + m2lrState);
+				//logger.info("......................m2lrState/" + m2lrState);
 				Thread.sleep(200);
 			}
 			while (m1fbThread != null && m1fbState != null)
 			{
-				logger.info("......................m1fbState/" + m1fbState);
+				///////logger.info("......................m1fbState/" + m1fbState);
 				Thread.sleep(200);
 			}
 			myMotors.brakeAll();
@@ -169,13 +169,13 @@ public class WheelChairMotorControl implements IMotorControl {
 						+ numMsToRunCmdFor + "] ms ...");
 				for (int i = 0; i < numPeriods; i++) {
 					long time = System.currentTimeMillis();
-					logger.info("     turning on for [" + numMsHi + "]ms...");
+					logger.debug("     turning on for [" + numMsHi + "]ms...");
 					myMotors.lowLevelMove(m1foreAft,m2leftRight);
 					Thread.sleep(numMsHi);
 
 					if (numMsLo > 0) {
 						time = System.currentTimeMillis();
-						logger.info("     turning off for [" + numMsLo + "]ms...");
+						logger.debug("     turning off for [" + numMsLo + "]ms...");
 						myMotors.lowLevelStop(m1foreAft,m2leftRight);
 						Thread.sleep(numMsLo);
 					}
