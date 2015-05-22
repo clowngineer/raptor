@@ -2,8 +2,6 @@ package com.cobinrox.io.impl;
 
 import org.apache.log4j.Logger;
 
-import com.cobinrox.io.impl.IMotorControl;
-import com.cobinrox.io.impl.MotorProps;
 import com.cobinrox.io.impl.gpio.AbstractMotorControl;
 import com.cobinrox.io.impl.gpio.Pi4jMotorControl;
 import com.cobinrox.io.impl.gpio.WiringPiMotorControl;
@@ -114,8 +112,8 @@ public class WheelChairMotorControl implements IMotorControl {
 				final String m1foreAftT = foreAft;
 				m1fbThread = new Thread() {
 					public void run() {
-						pulse(m1foreAftT, null,mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
-						//pulse(m1, null,mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
+						pulse(m1foreAftT, null,mp.duty_cycle_hi_ms, mp.duty_cycle_lo_ms, mp.cmdRunTimeMs);
+						//pulse(m1, null,mp.duty_cycle_hi_ms, mp.duty_cycle_lo_ms, mp.cmdRunTimeMs);
 						m1fbState=null;
 					}
 				};
@@ -125,8 +123,8 @@ public class WheelChairMotorControl implements IMotorControl {
 				final String m2leftRightT = leftRight;
 				m2lrThread = new Thread() {
 					public void run() {
-						pulse(null,m2leftRightT, mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
-						//pulse(null,m2, mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
+						pulse(null,m2leftRightT, mp.duty_cycle_hi_ms, mp.duty_cycle_lo_ms, mp.cmdRunTimeMs);
+						//pulse(null,m2, mp.duty_cycle_hi_ms, mp.duty_cycle_lo_ms, mp.cmdRunTimeMs);
 						m2lrState = null;
 					}
 				};

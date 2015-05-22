@@ -2,8 +2,6 @@ package com.cobinrox.io.impl;
 
 import org.apache.log4j.Logger;
 
-import com.cobinrox.io.impl.IMotorControl;
-import com.cobinrox.io.impl.MotorProps;
 import com.cobinrox.io.impl.gpio.AbstractMotorControl;
 import com.cobinrox.io.impl.gpio.Pi4jMotorControl;
 import com.cobinrox.io.impl.gpio.WiringPiMotorControl;
@@ -50,7 +48,7 @@ public class RemoteCarMotorControl implements IMotorControl {
 			if (foreAft != null) {
 				fbThread = new Thread() {
 					public void run() {
-						pulse(foreAft, null,mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
+						pulse(foreAft, null,mp.duty_cycle_hi_ms, mp.duty_cycle_lo_ms, mp.cmdRunTimeMs);
 						fbState=null;
 					}
 				};
@@ -59,7 +57,7 @@ public class RemoteCarMotorControl implements IMotorControl {
 			if (leftRight != null) {
 				lrThread = new Thread() {
 					public void run() {
-						pulse(null,leftRight, mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
+						pulse(null,leftRight, mp.duty_cycle_hi_ms, mp.duty_cycle_lo_ms, mp.cmdRunTimeMs);
 						lrState = null;
 					}
 				};

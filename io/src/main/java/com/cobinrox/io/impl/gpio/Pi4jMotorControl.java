@@ -26,15 +26,15 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 		this.mp = mp;
 		logger.info("Initializing pins to OUTPUT MODE");
 
-		if( !mp.SIMULATE_PI)
+		if( !mp.simulate_pi)
 		{
 			try
 			{
 			pi4jController = GpioFactory.getInstance();
-			PinState pinoff = mp.GPIO_ON==1?PinState.HIGH:PinState.LOW;
+			PinState pinoff = mp.gpio_on ==1?PinState.HIGH:PinState.LOW;
 			
 			Pin pi4jPinNum = null;
-			switch(mp.FWD_GPIO_PIN_NUM)
+			switch(mp.fwd_gpio_pin_num)
 	        {
 	        case 7: pi4jPinNum = RaspiPin.GPIO_07;break;
 	        case 0: pi4jPinNum = RaspiPin.GPIO_00;break;
@@ -47,7 +47,7 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 	        }
 	        pi4jForwardPin = pi4jController.provisionDigitalOutputPin(pi4jPinNum,"FORWARD", pinoff);
 	        
-	        switch(mp.BACK_GPIO_PIN_NUM)
+	        switch(mp.back_gpio_pin_num)
 	        {
 	        case 7: pi4jPinNum = RaspiPin.GPIO_07;break;
 	        case 0: pi4jPinNum = RaspiPin.GPIO_00;break;
@@ -62,7 +62,7 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 	        
 	        if( mp.NUM_MOTORS>1)
 	        {
-		        switch(mp.LEFT_GPIO_PIN_NUM)
+		        switch(mp.left_gpio_pin_num)
 		        {
 		        case 7: pi4jPinNum = RaspiPin.GPIO_07;break;
 		        case 0: pi4jPinNum = RaspiPin.GPIO_00;break;
@@ -75,7 +75,7 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 		        }
 		        pi4jLeftPin = pi4jController.provisionDigitalOutputPin(pi4jPinNum,"LEFT", pinoff);
 		 
-		        switch(mp.RIGHT_GPIO_PIN_NUM)
+		        switch(mp.right_gpio_pin_num)
 		        {
 		        case 7: pi4jPinNum = RaspiPin.GPIO_07;break;
 		        case 0: pi4jPinNum = RaspiPin.GPIO_00;break;
@@ -105,14 +105,14 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 	public  void lowLevelMove(final String foreAft, final String leftRight) throws Throwable
     {
 		logger.info("low level move [" + foreAft + "] [" + leftRight + "]" +
-                     (mp.SIMULATE_PI?"SIMULATED":""));
+                     (mp.simulate_pi ?"SIMULATED":""));
 		String m1Info = null;
 		String m2Info = null;
 		if (foreAft != null)
 		{
 			m1Info = " (m1 " + (foreAft.equals(mp.FORWARD) ? "+" : "-") + ")";
 			logger.info(m1Info);
-			if( !mp.SIMULATE_PI) {
+			if( !mp.simulate_pi) {
 				if (foreAft.equals(mp.FORWARD)) {
 					pi4jForwardPin.high();
 				} else {
@@ -125,7 +125,7 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 		{
 			m2Info = " (m2 " + (leftRight.equals(mp.LEFT) ? "+" : "-") + ")";
 			logger.info(m2Info);
-			if( !mp.SIMULATE_PI ) {
+			if( !mp.simulate_pi) {
 				if (leftRight.equals(mp.LEFT)) {
 					pi4jLeftPin.high();
 				} else {
@@ -138,8 +138,8 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 	public  void lowLevelStop(final String foreAft, final String leftRight) throws Throwable
 	{
 		logger.info("low level stop [" + foreAft + "] [" + leftRight + "]" +
-				(mp.SIMULATE_PI ? "SIMULATED" : ""));
-		if( !mp.SIMULATE_PI) {
+				(mp.simulate_pi ? "SIMULATED" : ""));
+		if( !mp.simulate_pi) {
 			pi4jBackPin.low();
 			pi4jForwardPin.low();
 			pi4jLeftPin.low();
@@ -147,7 +147,7 @@ public class Pi4jMotorControl extends AbstractMotorControl{
 		}
 	}
 	public  void brakeAll() {
-		if (!mp.SIMULATE_PI) {
+		if (!mp.simulate_pi) {
 			pi4jBackPin.low();
 			pi4jForwardPin.low();
 			pi4jLeftPin.low();

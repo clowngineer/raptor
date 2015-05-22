@@ -35,7 +35,7 @@ public abstract class AbstractMotorControl implements IMotorControl {
 			if (foreAft != null) {
 				fbThread = new Thread() {
 					public void run() {
-						pulse(foreAft, null,mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
+						pulse(foreAft, null,mp.duty_cycle_hi_ms, mp.duty_cycle_lo_ms, mp.cmdRunTimeMs);
 						fbState=null;
 					}
 				};
@@ -44,7 +44,7 @@ public abstract class AbstractMotorControl implements IMotorControl {
 			if (leftRight != null) {
 				lrThread = new Thread() {
 					public void run() {
-						pulse(null,leftRight, mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
+						pulse(null,leftRight, mp.duty_cycle_hi_ms, mp.duty_cycle_lo_ms, mp.cmdRunTimeMs);
 						lrState = null;
 					}
 				};

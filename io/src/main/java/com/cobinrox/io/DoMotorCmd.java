@@ -33,28 +33,28 @@ public class DoMotorCmd {
 		}
         scanIn.close();            
 
-		//dmc.moveOneDutyCycle(MotorProps.FORWARD, null);
+		//dmc.moveOneCmdCycle(MotorProps.FORWARD, null);
 	}
 	public void doThis(String fblr )
 	{
 	       if( fblr.equalsIgnoreCase("F"))
-	    	    moveOneDutyCycle(MotorProps.FORWARD, null);
+	    	    moveOneCmdCycle(MotorProps.FORWARD, null);
 	       else if(fblr.equalsIgnoreCase("B"))
-	    	    moveOneDutyCycle(MotorProps.BACKWARD, null);
+	    	    moveOneCmdCycle(MotorProps.BACKWARD, null);
 	       else if(fblr.equalsIgnoreCase("L"))
-	    	     moveOneDutyCycle(null, MotorProps.LEFT );
+	    	     moveOneCmdCycle(null, MotorProps.LEFT);
 	       else if(fblr.equalsIgnoreCase("R"))
-	    	     moveOneDutyCycle(null, MotorProps.RIGHT );
+	    	     moveOneCmdCycle(null, MotorProps.RIGHT);
 
 	       else if(fblr.equalsIgnoreCase("FL"))
-	    	    moveOneDutyCycle(MotorProps.FORWARD, MotorProps.LEFT);
+	    	    moveOneCmdCycle(MotorProps.FORWARD, MotorProps.LEFT);
 	       else if(fblr.equalsIgnoreCase("FR"))
-	    	    moveOneDutyCycle(MotorProps.FORWARD, MotorProps.RIGHT);
+	    	    moveOneCmdCycle(MotorProps.FORWARD, MotorProps.RIGHT);
 
 	       else if(fblr.equalsIgnoreCase("BL"))
-	    	    moveOneDutyCycle(MotorProps.BACKWARD, MotorProps.LEFT);
+	    	    moveOneCmdCycle(MotorProps.BACKWARD, MotorProps.LEFT);
 	       else if(fblr.equalsIgnoreCase("BR"))
-	    	    moveOneDutyCycle(MotorProps.BACKWARD, MotorProps.RIGHT);
+	    	    moveOneCmdCycle(MotorProps.BACKWARD, MotorProps.RIGHT);
 	       
 	       else if(fblr.toUpperCase().startsWith("D"))
 	    	    System.out.println(changeData(fblr.toUpperCase()));
@@ -62,7 +62,7 @@ public class DoMotorCmd {
 	public DoMotorCmd( )
 	{
 		mp.setProps(true);
-                if( mp.SIMULATE_PI )
+                if( mp.simulate_pi)
                 {
                    logger.info("***************************");
                    logger.info("     W A R N I N G   ! !  *");
@@ -111,21 +111,50 @@ public class DoMotorCmd {
 		{
 			if( key.equals("RT"))
 			{
-				mp.CMD_RUN_TIME_MS = Integer.parseInt(newVal);
+				mp.cmdRunTimeMs = Integer.parseInt(newVal);
 				ret = "Updated " + mp.CMD_RUN_TIME_MS_PROP + " [" + newVal + "]";
 			}
 			else if(key.equals("HI"))
 			{
-				mp.DUTY_CYCLE_HI_MS = Integer.parseInt(newVal);
+				mp.duty_cycle_hi_ms = Integer.parseInt(newVal);
 				ret = "Updated " + mp.DUTY_CYCLE_HI_MS_PROP + " [" + newVal + "]";
 
 			}
 			else if(key.equals("LO"))
 			{
-				mp.DUTY_CYCLE_LO_MS = Integer.parseInt(newVal);
+				mp.duty_cycle_lo_ms = Integer.parseInt(newVal);
 				ret = "Updated " + mp.DUTY_CYCLE_LO_MS_PROP + " [" + newVal + "]";
+			}
+			else if(key.equals("F"))
+			{
+				mp.fwd_gpio_pin_num = Integer.parseInt(newVal);
+				ret = "Updated " + mp.FWD_GPIO_PIN_PROP + " [" + newVal + "]";
+			}
+			else if(key.equals("B"))
+			{
+				mp.back_gpio_pin_num = Integer.parseInt(newVal);
+				ret = "Updated " + mp.BACK_GPIO_PIN_PROP + " [" + newVal + "]";
+			}
+			else if(key.equals("L"))
+			{
+				mp.left_gpio_pin_num = Integer.parseInt(newVal);
+				ret = "Updated " + mp.LEFT_GPIO_PIN_PROP + " [" + newVal + "]";
+			}else if(key.equals("R"))
+			{
+				mp.right_gpio_pin_num = Integer.parseInt(newVal);
+				ret = "Updated " + mp.RIGHT_GPIO_PIN_PROP + " [" + newVal + "]";
+			}
+			else if(key.equals("SIM"))
+			{
+				mp.simulate_pi = Boolean.parseBoolean(newVal);
+				ret = "Updated " + mp.SIMULATE_PI_PROP + " [" + newVal + "]";
 
 			}
+			else if(key.equals("SAV"))
+			{
+				ret = "SAVE PROPERTIES NOT IMPLEMENTED YET";
+			}
+
 		}
 		catch(Throwable t)
 		{
@@ -149,9 +178,10 @@ public class DoMotorCmd {
 		sb.append("D_HI_<float> (set duty hi time ms)\n");
 		sb.append("D_LO_<float> (set duty lo time ms)\n");
 		sb.append("D_SIM_<integer> (set simulate mode)");
+		sb.append("D_SAV (save props)\n");
 		return sb.toString();
 	}
-	public String moveOneDutyCycle(String fwdAft, String leftRight)
+	public String moveOneCmdCycle(String fwdAft, String leftRight)
 	{
 		String err = null;
 		try
@@ -171,9 +201,15 @@ public class DoMotorCmd {
 		motor.shutdown();
 	}
 	public int getDutyCycleHiMs() {
-		return mp.DUTY_CYCLE_HI_MS;
+		return mp.duty_cycle_hi_ms;
+	}
+	public void setDutyCycleLoMs(int lo) {
+		mp.duty_cycle_hi_ms = lo;
+	}
+	public int getDutyCycleLoMs() {
+		return mp.duty_cycle_lo_ms;
 	}
 	public void setDutyCycleHiMs(int dutyCycleHiMs) {
-		mp.DUTY_CYCLE_HI_MS = dutyCycleHiMs;
+		mp.duty_cycle_hi_ms = dutyCycleHiMs;
 	}
 }

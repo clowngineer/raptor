@@ -2,8 +2,6 @@ package com.cobinrox.io.impl;
 
 import org.apache.log4j.Logger;
 
-import com.cobinrox.io.impl.IMotorControl;
-import com.cobinrox.io.impl.MotorProps;
 import com.cobinrox.io.impl.gpio.AbstractMotorControl;
 import com.cobinrox.io.impl.gpio.Pi4jMotorControl;
 import com.cobinrox.io.impl.gpio.WiringPiMotorControl;
@@ -48,7 +46,7 @@ public class SimpleSingleMotorControl implements IMotorControl {
 			if (foreAft != null) {
 				fbThread = new Thread() {
 					public void run() {
-						pulse(foreAft,mp.DUTY_CYCLE_HI_MS, mp.DUTY_CYCLE_LO_MS, mp.CMD_RUN_TIME_MS);
+						pulse(foreAft,mp.duty_cycle_hi_ms, mp.duty_cycle_lo_ms, mp.cmdRunTimeMs);
 						fbState=null;
 					}
 				};

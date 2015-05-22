@@ -21,15 +21,15 @@ public class WiringPiMotorControl extends AbstractMotorControl {
 		this.mp = mp;
 		logger.info("Initializing pins to OUTPUT MODE");
 		try {
-			if (!mp.SIMULATE_PI) {
-				Process p = rt.exec("gpio mode " + mp.FWD_GPIO_PIN_NUM + " out");
+			if (!mp.simulate_pi) {
+				Process p = rt.exec("gpio mode " + mp.fwd_gpio_pin_num + " out");
 				p.waitFor();
-				p = rt.exec("gpio mode " + mp.BACK_GPIO_PIN_NUM + " out");
+				p = rt.exec("gpio mode " + mp.back_gpio_pin_num + " out");
 				p.waitFor();
 				if (mp.NUM_MOTORS > 1) {
-					p = rt.exec("gpio mode " + mp.LEFT_GPIO_PIN_NUM + " out");
+					p = rt.exec("gpio mode " + mp.left_gpio_pin_num + " out");
 					p.waitFor();
-					p = rt.exec("gpio mode " + mp.RIGHT_GPIO_PIN_NUM + " out");
+					p = rt.exec("gpio mode " + mp.right_gpio_pin_num + " out");
 					p.waitFor();
 				}
 				brakeAll();
@@ -43,18 +43,21 @@ public class WiringPiMotorControl extends AbstractMotorControl {
 		}
 	}
 
-	String m1TString;
+	String m1InfoString;
+	Thread m1InfoThread;
+	Thread m2InfoThread;
+	String m2InfoString;
 
 	private void setM1T() {
-		m1T = new Thread() {
+		m1InfoThread = new Thread() {
 			public void run() {
 				setName("M1");
 				int i = 0;
 				while (true) {
-					if( m1TString != null ) {
-						System.out.print(m1TString);
+					if( m1InfoString != null ) {
+						System.out.print("[" + m1InfoString + (i+1) + "]");
 						i++;
-						if (i > 300000) {
+						if (i > 80) {
 							i = 0;
 							System.out.println("");
 						}
@@ -67,21 +70,21 @@ public class WiringPiMotorControl extends AbstractMotorControl {
 		};
 	}
 
-	Thread m1T;
-	Thread m2T;
-	String m2TString;
+
 
 	private void setM2T() {
-		m2T = new Thread() {
+		m2InfoThread = new Thread() {
 			int i;
 
 			public void run() {
 				setName("M2");
 				while (true)  {
-					if( m2TString != null ) {
-						System.out.print(m2TString);
+					if( m2InfoString != null ) {
+						//System.out.print(m2InfoString);
+						System.out.print("[" + m2InfoString + (i+1) + "]");
+
 						i++;
-						if (i > 300000) {
+						if (i > 80) {
 							i = 0;
 							System.out.println("");
 						}
@@ -96,7 +99,7 @@ public class WiringPiMotorControl extends AbstractMotorControl {
 
 	public void lowLevelMove(final String foreAft, final String leftRight) throws Throwable {
 		logger.debug("          low level move [" + foreAft + "] [" + leftRight + "]" +
-				(mp.SIMULATE_PI ? "SIMULATED" : "") + "...");
+				(mp.simulate_pi ? "SIMULATED" : "") + "...");
 		Process p = null;
 		fwdCmd = null;
 		lrCmd = null;
@@ -107,67 +110,78 @@ public class WiringPiMotorControl extends AbstractMotorControl {
 		if (foreAft != null && (foreAft.equals(mp.FORWARD) || foreAft.equals(mp.BACKWARD))) {
 			fwdCmd = "gpio write "
 					+ (foreAft.equals(mp.FORWARD) ?
-					mp.FWD_GPIO_PIN_NUM
+					mp.fwd_gpio_pin_num
 					:
-					mp.BACK_GPIO_PIN_NUM);
+					mp.back_gpio_pin_num);
 			m1Info = fwdCmd + " (m1 " + (foreAft.equals(mp.FORWARD) ? "+" : "-") + ")";
-			m1TString = (foreAft.equals(mp.FORWARD) ? "F" : "B");
-			if (m1T == null ){ setM1T(); m1T.start();}
-			//if( m1T.isInterrupted() ){m1T=null;setM1T();m1T.start();}
+			m1InfoString = (foreAft.equals(mp.FORWARD) ? "F" : "B");
+			if (m1InfoThread == null ){ setM1T(); m1InfoThread.start();}
+			//if( m1InfoThread.isInterrupted() ){m1InfoThread=null;setM1T();m1InfoThread.start();}
 
 		}
 		if (leftRight != null && (leftRight.equals(mp.LEFT) || leftRight.equals(mp.RIGHT))) {
 			lrCmd = "gpio write "
 					+ (leftRight.equals(mp.LEFT) ?
-					mp.LEFT_GPIO_PIN_NUM
+					mp.left_gpio_pin_num
 					:
-					mp.RIGHT_GPIO_PIN_NUM);
-			m2TString = (leftRight.equals(mp.LEFT) ? "L" : "R");
-			if (m2T == null){ setM2T(); m2T.start();}
-			//if (m2T != null && !m2T.isAlive()) m2T.start();
+					mp.right_gpio_pin_num);
+			m2InfoString = (leftRight.equals(mp.LEFT) ? "L" : "R");
+			if (m2InfoThread == null){ setM2T(); m2InfoThread.start();}
+			//if (m2InfoThread != null && !m2InfoThread.isAlive()) m2InfoThread.start();
 			m2Info = lrCmd + " (m2 " + (leftRight.equals(mp.LEFT) ? "+" : "-") + ")";
 
 		}
-		String pulseOnCmd = (fwdCmd != null ? fwdCmd : lrCmd) + " " + mp.GPIO_ON;
-		logger.debug("          " + pulseOnCmd + (mp.SIMULATE_PI ? " SIMULATED" : ""));
-		logger.debug("          " + (m1Info == null ? m2Info : m1Info) + (mp.SIMULATE_PI ? " SIMULATED" : ""));
-		if (!mp.SIMULATE_PI) {
+		String pulseOnCmd = (fwdCmd != null ? fwdCmd : lrCmd) + " " + mp.gpio_on;
+		logger.debug("          " + pulseOnCmd + (mp.simulate_pi ? " SIMULATED" : ""));
+		logger.debug("          " + (m1Info == null ? m2Info : m1Info) + (mp.simulate_pi ? " SIMULATED" : ""));
+		if (!mp.simulate_pi) {
 			p = rt.exec(pulseOnCmd);
 			p.waitFor();
+		}
+		else
+		{
+			//logger.info("Simulate sending a low level pulse");
+
 		}
 		//kind of annoying logger.info("          ...end low level move");
 	}
 
 	public void lowLevelStop(final String m1foreAft, final String m2leftRight) throws Throwable {
 		logger.debug("          low level stopping [" + m1foreAft + "] [" + m2leftRight + "]" +
-				(mp.SIMULATE_PI ? "SIMULATED" : "") + "...");
+				(mp.simulate_pi ? "SIMULATED" : "") + "...");
 		Process p = null;
 		if (m1foreAft!=null ) {
 			fwdCmd = "gpio write "
 					+ (m1foreAft.equals(mp.FORWARD) ?
-					mp.FWD_GPIO_PIN_NUM
+					mp.fwd_gpio_pin_num
 					:
-					mp.BACK_GPIO_PIN_NUM);
-			m1TString = (m1foreAft.equals(mp.FORWARD) ? "f" : "b");
-			if (m1T == null){ setM1T(); m1T.start();}
-			//if (m1T != null && !m1T.isAlive())
+					mp.back_gpio_pin_num);
+			m1InfoString = (m1foreAft.equals(mp.FORWARD) ? "f" : "b");
+			if (m1InfoThread == null){ setM1T(); m1InfoThread.start();}
+			//if (m1InfoThread != null && !m1InfoThread.isAlive())
 		}
 		if (m2leftRight!= null) {
 			lrCmd = "gpio write "
 					+ (m2leftRight.equals(mp.LEFT) ?
-					mp.LEFT_GPIO_PIN_NUM
+					mp.left_gpio_pin_num
 					:
-					mp.RIGHT_GPIO_PIN_NUM);
-			m2TString = (m2leftRight.equals(mp.LEFT) ? "l" : "r");
-			if (m2T == null){setM2T(); m2T.start();}
-			//if (m2T != null && !m2T.isAlive()) m2T.start();
+					mp.right_gpio_pin_num);
+			m2InfoString = (m2leftRight.equals(mp.LEFT) ? "l" : "r");
+			if (m2InfoThread == null){setM2T(); m2InfoThread.start();}
+			//if (m2InfoThread != null && !m2InfoThread.isAlive()) m2InfoThread.start();
 		}
-		String pulseOffCmd = (fwdCmd != null ? fwdCmd : lrCmd) + " " + mp.GPIO_OFF;
-		logger.debug("          " + pulseOffCmd + (mp.SIMULATE_PI ? " SIMULATED" : ""));
-		if (!mp.SIMULATE_PI) {
+		String pulseOffCmd = (fwdCmd != null ? fwdCmd : lrCmd) + " " + mp.gpio_off;
+		logger.debug("          " + pulseOffCmd + (mp.simulate_pi ? " SIMULATED" : ""));
+		if (!mp.simulate_pi) {
 			p = rt.exec(pulseOffCmd);
 			p.waitFor();
 		}
+		else
+		{
+			//logger.info("Simulate sending a low level stop");
+		}
+		//if( m1foreAft != null) m1InfoString="*";
+		//if( m2leftRight != null) m2InfoString = "&";
 		logger.debug("          ...end low level stop");
 	}
 
@@ -176,32 +190,32 @@ public class WiringPiMotorControl extends AbstractMotorControl {
 		try {
 			long start = new java.util.Date().getTime();
 			logger.debug("     Shutdown (brake) all pins...");
-			String cmd = "gpio write " + mp.FWD_GPIO_PIN_NUM + " " + mp.GPIO_OFF;
-			logger.debug(cmd + (mp.SIMULATE_PI ? " SIMULATED" : ""));
-			if (!mp.SIMULATE_PI) {
+			String cmd = "gpio write " + mp.fwd_gpio_pin_num + " " + mp.gpio_off;
+			logger.debug(cmd + (mp.simulate_pi ? " SIMULATED" : ""));
+			if (!mp.simulate_pi) {
 				p = rt.exec(cmd);
 				p.waitFor();
 			}
 			long stop = new java.util.Date().getTime();
 			long dur = stop - start;
 			logger.debug("stop " + stop + " dur " + dur);
-			cmd = "gpio write " + mp.BACK_GPIO_PIN_NUM + " " + mp.GPIO_OFF;
-			logger.debug(cmd + (mp.SIMULATE_PI ? " SIMULATED" : ""));
-			if (!mp.SIMULATE_PI) {
+			cmd = "gpio write " + mp.back_gpio_pin_num + " " + mp.gpio_off;
+			logger.debug(cmd + (mp.simulate_pi ? " SIMULATED" : ""));
+			if (!mp.simulate_pi) {
 				p = rt.exec(cmd);
 				p.waitFor();
 			}
 			if (mp.NUM_MOTORS > 1) {
-				cmd = "gpio write " + mp.LEFT_GPIO_PIN_NUM + " " + mp.GPIO_OFF;
-				logger.debug(cmd + (mp.SIMULATE_PI ? " SIMULATED" : ""));
-				if (!mp.SIMULATE_PI) {
+				cmd = "gpio write " + mp.left_gpio_pin_num + " " + mp.gpio_off;
+				logger.debug(cmd + (mp.simulate_pi ? " SIMULATED" : ""));
+				if (!mp.simulate_pi) {
 					p = rt.exec(cmd);
 					p.waitFor();
 				}
 
-				cmd = "gpio write " + mp.RIGHT_GPIO_PIN_NUM + " " + mp.GPIO_OFF;
-				logger.debug(cmd + (mp.SIMULATE_PI ? " SIMULATED" : ""));
-				if (!mp.SIMULATE_PI) {
+				cmd = "gpio write " + mp.right_gpio_pin_num + " " + mp.gpio_off;
+				logger.debug(cmd + (mp.simulate_pi ? " SIMULATED" : ""));
+				if (!mp.simulate_pi) {
 					p = rt.exec(cmd);
 					p.waitFor();
 				}
@@ -212,8 +226,8 @@ public class WiringPiMotorControl extends AbstractMotorControl {
 			System.err.println("ERROR CLEARING ALL");
 		}
 		try {
-			m2TString = null;
-			m1TString = null;
+			m2InfoString = null;
+			m1InfoString = null;
 
 		} catch (Throwable t) {
 
